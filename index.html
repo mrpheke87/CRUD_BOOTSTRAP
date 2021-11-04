@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" 
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script>
+    function AddRow()
+    {
+      document.getElementById("add_button").disabled = true;
+      var nama = document.getElementById("nama").value;
+      var kelas = document.getElementById("kelas").value;
+      var gender = document.getElementById("gender").value;
+      var nisn = document.getElementById("nisn").value;
+      var t1 = document.getElementById("t1").value;
+      var t2 = document.getElementById("t2").value;
+      var t3 = document.getElementById("t3").value;
+      var t4 = document.getElementById("t4").value;
+      var pts = document.getElementById("pts").value;
+      var us = document.getElementById("us").value;
+      if(nama != '' && kelas != '' && gender != '' && nisn != '' && t1 != '' && t2 != '' && t3 != '' && t4 != '' && pts != '' && us != '')
+      {
+        google.script.run.withSuccessHandler(function(return_string) 
+        {
+          SearchRecords();
+          document.getElementById("add_button").disabled = false;
+        }).AddRecord(nama, kelas, gender, nisn, t1, t2, t3, t4, pts, us);       
+      }
+      else
+      {
+        document.getElementById("display_error").innerHTML = "Lengkapi semua data terlebih dahulu!";
+        document.getElementById("add_button").disabled = false;
+      }
+    }
+
+    function ClearRecord()
+    {
+        document.getElementById("nama").value = '';
+        document.getElementById("kelas").value = '';
+        document.getElementById("gender").value = '';
+        document.getElementById("nisn").value = '';
+        document.getElementById("t1").value = '';
+        document.getElementById("t2").value = '';
+        document.getElementById("t3").value = '';
+        document.getElementById("t4").value = '';
+        document.getElementById("pts").value = '';
+        document.getElementById("us").value = '';
+        document.getElementById("display_error").innerHTML = "";
+    }
+
+    function UpdateRecord(row_number)
+    {
+      document.getElementById("update_button"+row_number).disabled = true;
+      var record_id = document.getElementById("up_record_id"+row_number).value;
+      var nama = document.getElementById("up_nama"+row_number).value;
+      var kelas = document.getElementById("up_kelas"+row_number).value;
+      var gender = document.getElementById("up_gender"+row_number).value;
+      var nisn = document.getElementById("up_nisn"+row_number).value;
+      var t1 = document.getElementById("up_t1"+row_number).value;
+      var t2 = document.getElementById("up_t2"+row_number).value;
+      var t3 = document.getElementById("up_t3"+row_number).value;
+      var t4 = document.getElementById("up_t4"+row_number).value;
+      var pts = document.getElementById("up_pts"+row_number).value;
+      var us = document.getElementById("up_us"+row_number).value;
+
+      google.script.run.withSuccessHandler(function(return_string) 
+      {
+          document.getElementById("update_button"+row_number).disabled = false;
+      }).UpdateRecord(record_id, nama, kelas, gender, nisn, t1, t2, t3, t4, pts, us);
+    }
+
+    function DeleteRecord(row_number)
+    {
+
+      var record_id = document.getElementById("up_record_id"+row_number).value;
+
+      google.script.run.withSuccessHandler(function(return_string) 
+      {
+        if(return_string == 'SUCCESS')
+        {
+          document.getElementById('mainTable').deleteRow(document.getElementById('ROWNUMBER:'+row_number).rowIndex); 
+        }
+      }).DeleteRecord(record_id);
+    }
+
+    function SearchRecords() 
+    {
+      var nama = document.getElementById("nama").value;
+      var kelas = document.getElementById("kelas").value;
+      var gender = document.getElementById("gender").value;
+      var nisn  = document.getElementById("nisn").value;
+      var t1 = document.getElementById("t1").value;
+      var t2 = document.getElementById("t2").value;
+      var t3 = document.getElementById("t3").value;
+      var t4 = document.getElementById("t4").value;
+      var pts = document.getElementById("pts").value;
+      var us = document.getElementById("us").value;
+      var row_number = 0;
+
+      google.script.run.withSuccessHandler(function(ar) 
+      {
+
+        console.log(ar);
+        var displayTable = '<form>';
+        displayTable += '<table class=\"table\" id=\"mainTable\" >';
+        displayTable += "<tr>";
+
+        ar.forEach(function(item, index) 
+        {
+          displayTable += "<tr id=\"ROWNUMBER:"+ row_number +"\" >";
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-12\" ><label for=\"up_nama\">Nama Siswa</label>  ";
+          displayTable += "<input type=\"text\" id=\"up_nama"+ row_number +"\" value=\""+item[1]+"\" class=\"form-control\" /> ";
+          displayTable += "<input type=\"hidden\" id=\"up_record_id"+ row_number +"\" value=\""+item[0]+"\" /></div></div> ";
+          displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-12\"><label for=\"up_kelas\">Kelas</label> ";
+          displayTable += "<input type=\"text\" id=\"up_kelas"+ row_number +"\" value=\""+item[2]+"\" class=\"form-control\" /></div></div></td> ";
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-8\"><label for=\"up_gender\">Gender</label> ";
+          displayTable += "<input type=\"text\" id=\"up_gender"+ row_number +"\" value=\""+item[3]+"\" class=\"form-control\" /></div></div> ";
+
+          displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-8\"><label for=\"up_nisn\">NISN</label> "; 
+          displayTable += "<input type=\"text\" id=\"up_nisn"+ row_number +"\" value=\""+item[4]+"\" class=\"form-control\" /></div> ";
+          
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-5\"><label for=\"up_t1\">Tugas 1</label> ";
+          displayTable += "<input type=\"text\" id=\"up_t1"+ row_number +"\" value=\""+item[5]+"\" class=\"form-control\" /></div></div> ";
+          displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-5\"><label for=\"up_t2\">Tugas 2</label> "; 
+         displayTable += "<input type=\"text\" id=\"up_t2"+ row_number +"\" value=\""+item[6]+"\" class=\"form-control\" /></div> ";
+
+
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-5\" ><label for=\"up_t3\">Tugas 3</label> ";
+          displayTable += "<input type=\"text\" id=\"up_t3"+ row_number +"\" value=\""+item[7]+"\" class=\"form-control\" /></div></div>";
+           displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-5\"><label for=\"up_t4\">Tugas 4</label> "; 
+         displayTable += "<input type=\"text\" id=\"up_t4"+ row_number +"\" value=\""+item[8]+"\" class=\"form-control\" /></div> ";
+
+        
+          displayTable += "<td><div class=\"form-row\"><div class=\"form-group col-md-5\" ><label for=\"up_pts\">PTS</label> ";
+          displayTable += "<input type=\"text\" id=\"up_pts"+ row_number +"\" value=\""+item[9]+"\" class=\"form-control\" /></div></div>";
+           displayTable += "<div class=\"form-row\"><div class=\"form-group col-md-5\"><label for=\"up_us\">UAS</label> "; 
+         displayTable += "<input type=\"text\" id=\"up_us"+ row_number +"\" value=\""+item[10]+"\" class=\"form-control\" /></div> ";
+
+
+
+          displayTable += "<td><div style=\"padding: 5px\"> ";
+          displayTable += "<input type=\"button\" id=\"update_button"+ row_number +"\" value=\"Update\" class=\"btn btn-success\" ";
+          displayTable += "onclick=\"UpdateRecord("+row_number+")\" /></div> ";
+          displayTable += "<div style=\"padding: 5px\" > ";
+          displayTable += "<input type=\"button\" value=\"Delete\" id=\"delete_button"+ row_number +"\"  class=\"btn btn-danger\" ";
+          displayTable += "onclick=\"DeleteRecord("+row_number+")\" /></div> ";
+          row_number++;    
+        });
+
+        displayTable += '</table></form>';     
+        document.getElementById("rowdata").innerHTML = displayTable;
+
+      }).searchRecords(nama, kelas, gender, nisn, t1, t2, t3, t4, pts, us);
+      
+    }
+    </script>
+
+  </head>
+  <body>
+  <div class="header"style="text-align:center; font-size:20px;font-weight;bold;">
+  <p>INPUT DATA NILAI SISWA</p>
+  </div>
+  <div style="padding: 10px;margin-left:8%;margin-right:8%;background-color:#2daeff;margin-top:-10px;font-weight:bold;">
+  <form>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="nama">Nama Siswa</label>
+  <input type="text" id="nama" class="form-control" placeholder="Ketikan nama siswa" />
+  </div>
+  <div class="form-group col-md-6">
+  <label for="kelas">Kelas</label>
+  <select type="text" id="kelas" class="form-control" />
+  <option>---Pilih kelas---</option>
+  <option>X IPA 1</option>
+  <option>X IPA 2</option>
+  <option>X IPA 3</option>
+  <option>X IPS 1</option>
+  <option>X IPS 2</option>
+  </select>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="gender">Jenis Kelamin</label>
+  <select type="text" id="gender" class="form-control" />
+  <option>---Pilih jenis kelamin---</option>
+  <option>Laki-laki</option>
+  <option>Perempuan</option>
+  </select>
+  </div> 
+  <div class="form-group col-md-6">
+  <label for="nisn">NISN</label>
+  <input type="text" id="nisn" class="form-control" placeholder="Masukan NISN"/>
+  </div>
+  </div>
+   <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="t1">Tugas 1</label>
+  <input type="text" id="t1" class="form-control" placeholder="Masukan nila tugas siswa"/>
+  </div> 
+  <div class="form-group col-md-6">
+  <label for="t2" >Tugas 2</label>
+  <input type="text" id="t2" class="form-control" placeholder="Masukan nila tugas siswa"/>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="t3" >Tugas 3</label>
+  <input type="text" id="t3" class="form-control "placeholder="Masukan nila tugas siswa"/>
+  </div>
+  <div class="form-group col-md-6">
+  <label for="t4" >Tugas 4</label>
+  <input type="text" id="t4" class="form-control" placeholder="Masukan nila tugas siswa"/>
+  </div> 
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6">
+  <label for="pts" >PTS</label>
+  <input type="text" id="pts" class="form-control "placeholder="Masukan nila PTS siswa"/>
+  </div>
+  <div class="form-group col-md-6">
+  <label for="us" >UAS</label>
+  <input type="text" id="us" class="form-control" placeholder="Masukan nila UAS siswa"/>
+  </div> 
+  </div>
+  <center>
+  <div class="form-group col-md-6">
+  <input type="button" value="Search Data" class="btn btn-primary" onclick="SearchRecords()" />
+  <input type="button" value="Add Data" class="btn btn-success" onclick="AddRow()" id="add_button" />
+  <input type="button" value="Clear Data" class="btn btn-danger" onclick="ClearRecord()" />
+  <div id="display_error" style="color: red" ></div>
+  </div>
+  </form> 
+  <div id="rowdata"></div>
+  </div>
+  </center>
+  </body>
+</html>
